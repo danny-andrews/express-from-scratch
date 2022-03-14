@@ -4,16 +4,19 @@ const { Pool } = require("pg");
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
+  ssl:
+    process.env.NODE_ENV === "production"
+      ? {
+          rejectUnauthorized: false,
+        }
+      : false,
 });
 
 const app = express();
 
 app.use(express.static("public"));
 
-app.get("/", (req, res) => {
+app.get("/users", (req, res) => {
   pool.query("SELECT * FROM users").then((result) => {
     res.send(result.rows);
   });
